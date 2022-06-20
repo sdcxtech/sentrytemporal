@@ -1,6 +1,6 @@
 # Sentry Temporal Interceptor
 
-The [temporal](https://www.temporal.io/) inteceptor captures panic and errors and report them 
+The [temporal](https://www.temporal.io/) interceptor captures panic and errors and report them 
 to [sentry](https://github.com/getsentry/sentry) server.
 
 ## Installation
