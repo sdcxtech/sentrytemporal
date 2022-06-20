@@ -1,8 +1,11 @@
 package sentrytemporal
 
 import (
+	"errors"
+
 	"github.com/getsentry/sentry-go"
 	"go.temporal.io/sdk/interceptor"
+	"go.temporal.io/sdk/internal"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -46,6 +49,11 @@ func (w *workflowInboundInterceptor) ExecuteWorkflow(
 
 	ret, err = w.Next.ExecuteWorkflow(ctx, in)
 	if err != nil {
+		var continueAsNewErr *internal.ContinueAsNewError
+		if errors.As(err, &continueAsNewErr) {
+			return
+		}
+
 		if skipper := w.root.options.WorkflowErrorSkipper; skipper != nil && skipper(err) {
 			return
 		}
