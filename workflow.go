@@ -1,11 +1,8 @@
 package sentrytemporal
 
 import (
-	"errors"
-
 	"github.com/getsentry/sentry-go"
 	"go.temporal.io/sdk/interceptor"
-	"go.temporal.io/sdk/internal"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
@@ -13,6 +10,13 @@ import (
 type workflowInboundInterceptor struct {
 	interceptor.WorkflowInboundInterceptorBase
 	root *workerInterceptor
+}
+
+func (w *workflowInboundInterceptor) Init(outbound interceptor.WorkflowOutboundInterceptor) error {
+	i := &workflowOutboundInterceptor{}
+	i.Next = outbound
+
+	return w.Next.Init(i)
 }
 
 // ExecuteWorkflow implements WorkflowInboundInterceptor.ExecuteWorkflow.
@@ -50,8 +54,7 @@ func (w *workflowInboundInterceptor) ExecuteWorkflow(
 
 	ret, err = w.Next.ExecuteWorkflow(ctx, in)
 	if err != nil {
-		var continueAsNewErr *internal.ContinueAsNewError
-		if errors.As(err, &continueAsNewErr) {
+		if isContinueAsNewError(err) {
 			return
 		}
 
@@ -120,4 +123,23 @@ func (w *workflowInboundInterceptor) HandleQuery(
 	}
 
 	return
+}
+
+//----------------------------------------------------------------------------
+
+type workflowOutboundInterceptor struct {
+	interceptor.WorkflowOutboundInterceptorBase
+}
+
+func (w *workflowOutboundInterceptor) NewContinueAsNewError(
+	ctx workflow.Context,
+	wfn interface{},
+	args ...interface{},
+) error {
+	// wrap the ContinueAsNewError in order to we could check this error type.
+	err := newContinueAsNewError(
+		w.Next.NewContinueAsNewError(ctx, wfn, args...),
+	)
+
+	return err
 }
