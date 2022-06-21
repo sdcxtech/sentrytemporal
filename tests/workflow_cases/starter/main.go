@@ -19,7 +19,6 @@ func main() {
 	RunWorkflowPanic(c)
 	RunWorkflowError(c)
 	RunWorkflowQueryHandler(c)
-	RunWorkflowSignalHandler(c)
 }
 
 func RunWorkflowPanic(c client.Client) {
@@ -87,24 +86,5 @@ func RunWorkflowQueryHandler(c client.Client) {
 	_, err = c.QueryWorkflow(context.Background(), we.GetID(), we.GetRunID(), "panic", "query panic")
 	if err != nil {
 		log.Println("Unable to execute query workflow", err)
-	}
-}
-
-func RunWorkflowSignalHandler(c client.Client) {
-	workflowOptions := client.StartWorkflowOptions{
-		ID:        "sentry_tests_workflows_cases/signal",
-		TaskQueue: "sentry",
-	}
-
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, workflow_cases.WorkflowSignalHandler, "Temporal")
-	if err != nil {
-		log.Fatalln("Unable to execute workflow", err)
-	}
-
-	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
-
-	err = c.SignalWorkflow(context.Background(), we.GetID(), we.GetRunID(), "panic", "query error")
-	if err != nil {
-		log.Println("execute signal workflow", err)
 	}
 }

@@ -40,7 +40,6 @@ func main() {
 	w.RegisterWorkflow(workflow_cases.WorkflowPanic)
 	w.RegisterWorkflow(workflow_cases.WorkflowError)
 	w.RegisterWorkflow(workflow_cases.WorkflowQueryHandler)
-	w.RegisterWorkflow(workflow_cases.WorkflowSignalHandler)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {

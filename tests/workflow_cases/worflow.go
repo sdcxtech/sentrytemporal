@@ -29,16 +29,3 @@ func WorkflowQueryHandler(ctx workflow.Context, name string) (string, error) {
 
 	return "", nil
 }
-
-func WorkflowSignalHandler(ctx workflow.Context, name string) (string, error) {
-	errorChan := workflow.GetSignalChannel(ctx, "panic")
-	selector := workflow.NewSelector(ctx)
-
-	selector.AddReceive(errorChan, func(c workflow.ReceiveChannel, more bool) {
-		panic("test signal handler panic")
-	})
-
-	selector.Select(ctx)
-
-	return "", nil
-}
