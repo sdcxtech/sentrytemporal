@@ -1,24 +1,12 @@
 package sentrytemporal
 
-import "errors"
+import (
+	"errors"
 
-type continueAsNewError struct {
-	wrapped error
-}
-
-func newContinueAsNewError(err error) *continueAsNewError {
-	return &continueAsNewError{wrapped: err}
-}
-
-func (e *continueAsNewError) Error() string {
-	return e.wrapped.Error()
-}
-
-func (e *continueAsNewError) Unwrap() error {
-	return e.wrapped
-}
+	"go.temporal.io/sdk/workflow"
+)
 
 func isContinueAsNewError(err error) bool {
-	var continueAsNewErr *continueAsNewError
+	var continueAsNewErr *workflow.ContinueAsNewError
 	return errors.As(err, &continueAsNewErr)
 }

@@ -12,13 +12,6 @@ type workflowInboundInterceptor struct {
 	root *workerInterceptor
 }
 
-func (w *workflowInboundInterceptor) Init(outbound interceptor.WorkflowOutboundInterceptor) error {
-	i := &workflowOutboundInterceptor{}
-	i.Next = outbound
-
-	return w.Next.Init(i)
-}
-
 // ExecuteWorkflow implements WorkflowInboundInterceptor.ExecuteWorkflow.
 func (w *workflowInboundInterceptor) ExecuteWorkflow(
 	ctx workflow.Context,
@@ -123,23 +116,4 @@ func (w *workflowInboundInterceptor) HandleQuery(
 	}
 
 	return
-}
-
-//----------------------------------------------------------------------------
-
-type workflowOutboundInterceptor struct {
-	interceptor.WorkflowOutboundInterceptorBase
-}
-
-func (w *workflowOutboundInterceptor) NewContinueAsNewError(
-	ctx workflow.Context,
-	wfn interface{},
-	args ...interface{},
-) error {
-	// wrap the ContinueAsNewError in order to we could check this error type.
-	err := newContinueAsNewError(
-		w.Next.NewContinueAsNewError(ctx, wfn, args...),
-	)
-
-	return err
 }
