@@ -2,6 +2,7 @@ package sentrytemporal
 
 import (
 	"context"
+	"errors"
 
 	"github.com/getsentry/sentry-go"
 	"go.temporal.io/sdk/activity"
@@ -49,6 +50,10 @@ func (a *activityInboundInterceptor) ExecuteActivity(
 
 	ret, err = a.Next.ExecuteActivity(ctx, in)
 	if err != nil {
+		if errors.Is(err, activity.ErrResultPending) {
+			return
+		}
+
 		if skipper := a.root.options.ActivityErrorSkipper; skipper != nil && skipper(err) {
 			return
 		}
