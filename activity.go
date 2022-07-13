@@ -54,7 +54,7 @@ func (a *activityInboundInterceptor) ExecuteActivity(
 			return
 		}
 
-		if skipper := a.root.options.ActivityErrorSkipper; skipper != nil && skipper(err) {
+		if skipper := a.root.options.ActivityErrorSkipper; skipper != nil && skipper(ctx, err) {
 			return
 		}
 

@@ -55,7 +55,7 @@ func (w *workflowInboundInterceptor) ExecuteWorkflow(
 			return
 		}
 
-		if skipper := w.root.options.WorkflowErrorSkipper; skipper != nil && skipper(err) {
+		if skipper := w.root.options.WorkflowErrorSkipper; skipper != nil && skipper(ctx, err) {
 			return
 		}
 
@@ -106,7 +106,7 @@ func (w *workflowInboundInterceptor) HandleQuery(
 			return
 		}
 
-		if skipper := w.root.options.WorkflowErrorSkipper; skipper != nil && skipper(err) {
+		if skipper := w.root.options.WorkflowErrorSkipper; skipper != nil && skipper(ctx, err) {
 			return
 		}
 

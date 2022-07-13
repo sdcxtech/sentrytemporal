@@ -35,10 +35,34 @@ go get github.com/sdcxtech/sentrytemporal
 ```go
 type Options struct {
 	// ActivityErrorSkipper configures a function to determine if an error from activity should be skipped.
-	ActivityErrorSkipper ErrorSkipper
+	ActivityErrorSkipper ActivityErrorSkipper
 	// WorkflowErrorSkipper configures a function to determine if an error from workflow should be skipped.
-	WorkflowErrorSkipper ErrorSkipper
+	WorkflowErrorSkipper WorkflowErrorSkipper
 }
 
-type ErrorSkipper func(err error) bool
+type (
+	ActivityErrorSkipper func(context.Context, error) bool
+	WorkflowErrorSkipper func(workflow.Context, error) bool
+)
+```
+
+Example:
+
+Only report retrieable error when attempt count is great then `1`.
+
+```go
+activityErrorSkipper := func(ctx context.Context, err error) bool {
+	var errApp *temporal.ApplicationError
+	if errors.As(err, &errApp) {
+		if errApp.NonRetryable() {
+			return false
+		}
+
+		info := activity.GetInfo(ctx)
+
+		return !(info.Attempt > 1)
+	}
+
+	return false
+}
 ```
