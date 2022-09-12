@@ -35,6 +35,11 @@ func (a *activityInboundInterceptor) ExecuteActivity(
 				"{{ default }}",
 			},
 		)
+
+		if a.root.options.ActivityScopeCustomizer != nil {
+			a.root.options.ActivityScopeCustomizer(ctx, scope, err)
+		}
+
 	}
 
 	defer func() {

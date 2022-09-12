@@ -31,6 +31,10 @@ func (w *workflowInboundInterceptor) ExecuteWorkflow(
 				"{{ default }}",
 			},
 		)
+
+		if w.root.options.WorkflowScopeCustomizer != nil {
+			w.root.options.WorkflowScopeCustomizer(ctx, scope, err)
+		}
 	}
 
 	defer func() {
