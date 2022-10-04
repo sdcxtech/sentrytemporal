@@ -10,14 +10,24 @@ import (
 
 type Options struct {
 	// ActivityErrorSkipper configures a function to determine if an error from activity should be skipped.
+	// If it returns true, the error is ignored.
 	ActivityErrorSkipper ActivityErrorSkipper
 	// WorkflowErrorSkipper configures a function to determine if an error from workflow should be skipped.
+	// If it returns true, the error is ignored.
 	WorkflowErrorSkipper WorkflowErrorSkipper
+
+	// ActivityScopeCustomizer applies custom options to a sentry.Scope just before an error is reported from an activity
+	ActivityScopeCustomizer ActivityScopeCustomizer
+	// WorkflowScopeCustomizer applies custom options to a sentry.Scope just before an error is reported from a workflow
+	WorkflowScopeCustomizer WorkflowScopeCustomizer
 }
 
 type (
 	ActivityErrorSkipper func(context.Context, error) bool
 	WorkflowErrorSkipper func(workflow.Context, error) bool
+
+	ActivityScopeCustomizer func(context.Context, *sentry.Scope, error)
+	WorkflowScopeCustomizer func(workflow.Context, *sentry.Scope, error)
 )
 
 // New creates a worker interceptor which will report error to sentry.

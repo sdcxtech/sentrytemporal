@@ -34,21 +34,31 @@ go get github.com/sdcxtech/sentrytemporal
 
 ```go
 type Options struct {
-	// ActivityErrorSkipper configures a function to determine if an error from activity should be skipped.
-	ActivityErrorSkipper ActivityErrorSkipper
-	// WorkflowErrorSkipper configures a function to determine if an error from workflow should be skipped.
-	WorkflowErrorSkipper WorkflowErrorSkipper
+    // ActivityErrorSkipper configures a function to determine if an error (or panic) from activity should be skipped.
+    // If it returns true, the error is ignored.
+    ActivityErrorSkipper ActivityErrorSkipper
+    // WorkflowErrorSkipper configures a function to determine if an error (or panic) from workflow should be skipped.
+    // If it returns true, the error is ignored.
+    WorkflowErrorSkipper WorkflowErrorSkipper
+    
+    // ActivityScopeCustomizer applies custom options to a sentry.Scope just before an error is reported from an activity
+    ActivityScopeCustomizer ActivityScopeCustomizer
+    // WorkflowScopeCustomizer applies custom options to a sentry.Scope just before an error is reported from a workflow
+    WorkflowScopeCustomizer WorkflowScopeCustomizer
 }
 
 type (
-	ActivityErrorSkipper func(context.Context, error) bool
-	WorkflowErrorSkipper func(workflow.Context, error) bool
+    ActivityErrorSkipper func(context.Context, error) bool
+    WorkflowErrorSkipper func(workflow.Context, error) bool
+
+    ActivityScopeCustomizer func(context.Context, *sentry.Scope, error)
+    WorkflowScopeCustomizer func(workflow.Context, *sentry.Scope, error)
 )
 ```
 
 Example:
 
-Only report retrieable error when attempt count is great then `1`.
+Only report retryable error when attempt count is great then `1`.
 
 ```go
 activityErrorSkipper := func(ctx context.Context, err error) bool {
