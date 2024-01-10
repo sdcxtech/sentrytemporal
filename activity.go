@@ -23,8 +23,8 @@ func (a *activityInboundInterceptor) ExecuteActivity(
 
 	configureScope := func(scope *sentry.Scope) {
 		info := activity.GetInfo(ctx)
-		scope.SetContext("activity info", MustStruct2Map(info))
-		scope.SetContext("execute activity input", MustStruct2Map(in))
+		scope.SetContext("activity info", mustStruct2Map(info))
+		scope.SetContext("execute activity input", mustStruct2Map(in))
 
 		scope.SetTag("temporal_io_kind", "ExecuteActivity")
 

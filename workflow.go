@@ -19,8 +19,8 @@ func (w *workflowInboundInterceptor) ExecuteWorkflow(
 ) (ret interface{}, err error) {
 	configureScope := func(scope *sentry.Scope) {
 		info := workflow.GetInfo(ctx)
-		scope.SetContext("workflow info", MustStruct2Map(info))
-		scope.SetContext("execute workflow input", MustStruct2Map(in))
+		scope.SetContext("workflow info", mustStruct2Map(info))
+		scope.SetContext("execute workflow input", mustStruct2Map(in))
 
 		scope.SetTag("temporal_io_kind", "ExecuteWorkflow")
 
@@ -78,8 +78,8 @@ func (w *workflowInboundInterceptor) HandleQuery(
 ) (ret interface{}, err error) {
 	configureScope := func(scope *sentry.Scope) {
 		info := workflow.GetInfo(ctx)
-		scope.SetContext("workflow info", MustStruct2Map(info))
-		scope.SetContext("handle query input", MustStruct2Map(in))
+		scope.SetContext("workflow info", mustStruct2Map(info))
+		scope.SetContext("handle query input", mustStruct2Map(in))
 
 		scope.SetTag("temporal_io_kind", "HandleQuery")
 
