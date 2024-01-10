@@ -23,8 +23,8 @@ func (a *activityInboundInterceptor) ExecuteActivity(
 
 	configureScope := func(scope *sentry.Scope) {
 		info := activity.GetInfo(ctx)
-		scope.SetContext("activity info", info)
-		scope.SetContext("execute activity input", in)
+		scope.SetContext("activity info", MustStruct2Map(info))
+		scope.SetContext("execute activity input", MustStruct2Map(in))
 
 		scope.SetTag("temporal_io_kind", "ExecuteActivity")
 
@@ -39,7 +39,6 @@ func (a *activityInboundInterceptor) ExecuteActivity(
 		if a.root.options.ActivityScopeCustomizer != nil {
 			a.root.options.ActivityScopeCustomizer(ctx, scope, err)
 		}
-
 	}
 
 	defer func() {
